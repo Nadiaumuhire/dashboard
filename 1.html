@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HR Insight Dashboard</title>
+
+<style>
+:root{
+  --bg:#f1f1f4; --side:#f6f6f9; --surface:#fff; --ink:#16161d; --muted:#7c7c8a;
+  --line:#ececf1; --chip:#f3f3f7; --hover:#ececf2; --brand:#7c5ce6; --orange:#f2994a;
+  --green:#27ae60; --mint:#4cc27a; --red:#e5484d;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);padding:24px;
+  font:500 12px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+
+/* ---------- APP LAYOUT ---------- */
+.app{display:grid;grid-template-columns:230px 1fr;gap:10px;max-width:1200px;margin:0 auto;
+  background:var(--side);border:1px solid var(--line);border-radius:14px;padding:10px}
+
+/* ---------- SIDEBAR (Part 1) ---------- */
+.sidebar{display:flex;flex-direction:column;gap:12px;min-height:640px;padding:2px}
+.org{display:flex;align-items:center;gap:10px;background:var(--surface);
+  border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.logo{width:32px;height:32px;border-radius:9px;background:var(--brand);
+  display:grid;place-items:center;flex:none}
+.logo i{width:12px;height:12px;border:2px solid #fff;border-radius:3px;transform:rotate(45deg)}
+.org b{display:block;font-size:12px;font-weight:600}
+.org span{display:block;font-size:10px;color:var(--muted)}
+.search{display:flex;align-items:center;gap:8px;background:var(--hover);
+  border-radius:8px;padding:8px 10px;color:var(--muted)}
+.search span{flex:1}
+.search kbd{font:inherit;font-size:10px;background:var(--surface);border-radius:4px;padding:1px 6px}
+.nav,.bottom{display:flex;flex-direction:column;gap:2px}
+.nav a,.bottom a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;
+  color:var(--muted);text-decoration:none;transition:background .15s,color .15s}
+.nav a:hover,.bottom a:hover{background:var(--hover);color:var(--ink)}
+.nav a.active{background:var(--brand);color:#fff}
+.nav svg,.bottom svg{width:15px;height:15px;flex:none;fill:none;stroke:currentColor;
+  stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.bottom{margin-top:auto}
+.bottom a.signout{color:var(--red)}
+.bottom a.signout:hover{background:rgba(229,72,77,.1);color:var(--red)}
+a:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+
+/* ---------- MAIN AREA + HEADER (Part 2) ---------- */
+.main{display:flex;flex-direction:column;gap:10px;min-width:0}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
+  background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.crumb{color:var(--muted)}
+.crumb b{color:var(--ink);font-weight:600}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:8px;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  font:inherit;font-weight:600;cursor:pointer;transition:background .15s,opacity .15s}
+.btn:hover{background:var(--hover)}
+.btn svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.primary:hover{background:var(--brand);opacity:.9}
+.btn:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.page{display:flex;flex-direction:column;gap:14px;
+  background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px}
+.head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.head h1{margin:0;font-size:20px;font-weight:600}
+.head p{margin:3px 0 0;color:var(--muted);font-size:11px}
+
+/* ---------- STAT CARDS (Part 3) ---------- */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.stat{background:var(--chip);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.stat-top{display:flex;align-items:center;gap:8px;padding:10px 12px}
+.stat-top svg{width:15px;height:15px;flex:none;fill:none;stroke:var(--muted);
+  stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.stat-top b{flex:1;font-weight:600}
+.dots{background:none;border:0;padding:2px 4px;border-radius:4px;color:var(--ink);
+  font:inherit;font-weight:700;letter-spacing:1px;cursor:pointer}
+.dots:hover{background:var(--hover)}
+.dots:focus-visible{outline:2px solid var(--brand);outline-offset:1px}
+.stat-body{display:flex;justify-content:space-between;align-items:center;gap:8px;
+  background:var(--surface);margin:0 2px 2px;border-radius:8px;padding:12px}
+.stat-body strong{font-size:26px;font-weight:600;line-height:1}
+.change{color:var(--green);font-size:10px;font-weight:600;white-space:nowrap}
+.change em{font-style:normal;font-weight:500;color:var(--muted);margin-left:3px}
+
+/* ---------- CARDS + ROWS (Parts 4-7) ---------- */
+.row{display:grid;grid-template-columns:1fr 210px;gap:10px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;min-width:0}
+.card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.card-head h2{margin:0;font-size:12px;font-weight:600}
+
+/* ---------- TEAM PERFORMANCE (Part 4) ---------- */
+.chart-meta{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.legend{display:flex;gap:16px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;
+  margin-right:6px;background:var(--c)}
+.seg{display:flex;background:var(--chip);border-radius:8px;padding:2px}
+.seg button{border:0;background:none;padding:4px 12px;border-radius:6px;color:var(--muted);
+  font:inherit;cursor:pointer}
+.seg button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.15)}
+.chart{position:relative}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.tip{position:absolute;left:49%;top:24%;background:var(--surface);border:1px solid var(--line);
+  border-radius:8px;padding:6px 10px;box-shadow:0 4px 14px rgba(0,0,0,.12);font-size:10px;white-space:nowrap}
+.tip b{display:block;margin-bottom:4px}
+.tip div{display:flex;align-items:center;gap:6px;justify-content:space-between}
+.tip div::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--c)}
+.tip div span{flex:1;color:var(--muted);margin-right:8px}
+
+/* ---------- ATTENDANCE HEATMAP (Part 5) ---------- */
+.heat{display:grid;grid-template-columns:30px repeat(5,1fr);gap:5px;align-items:center;
+  font-size:10px;color:var(--muted)}
+.heat i{display:block;aspect-ratio:1/.8;border-radius:5px;background:var(--brand)}
+.heat .d{text-align:center}
+.l1{opacity:.08}.l2{opacity:.14}.l3{opacity:.22}.l4{opacity:.34}.l5{opacity:.58}.l6{opacity:.88}
+
+/* ---------- EMPLOYEES TABLE (Part 6) ---------- */
+.tbl{overflow-x:auto}
+table{width:100%;min-width:560px;border-collapse:collapse;font-size:10.5px}
+th{text-align:left;color:var(--muted);font-weight:500;padding:6px 6px 8px;border-bottom:1px solid var(--line)}
+td{padding:9px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+.cb{display:inline-block;width:11px;height:11px;border:1px solid var(--muted);border-radius:3px;
+  vertical-align:middle;opacity:.7}
+.active-s{color:var(--green);font-weight:600}
+
+/* ---------- JOBS OVERVIEW GAUGE (Part 7) ---------- */
+.gauge{position:relative;width:100%;max-width:170px;margin:4px auto 0}
+.gauge svg{display:block;width:100%}
+.gauge-n{position:absolute;left:0;right:0;bottom:6px;text-align:center}
+.gauge-n b{display:block;font-size:26px;font-weight:600;line-height:1}
+.gauge-n span{font-size:10px;color:var(--muted)}
+.keys{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.keys div{display:flex;align-items:center;gap:6px}
+.keys div::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--c)}
+.keys b{font-weight:600}
+.keys span{margin-left:auto;color:var(--muted);font-size:10px}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width:1000px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .row{grid-template-columns:1fr}
+}
+@media (max-width:800px){
+  .app{grid-template-columns:1fr}
+  .sidebar{min-height:0}
+  .bottom{margin-top:0}
+}
+@media (max-width:480px){
+  body{padding:10px}
+  .stats{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- ===== PART 1: SIDEBAR ===== -->
+  <aside class="sidebar">
+
+    <div class="org">
+      <div class="logo"><i></i></div>
+      <div><b>Nosense Studio</b><span>hello@nonsense.studio</span></div>
+    </div>
+
+    <div class="search"><span>Search</span><kbd>⌘+K</kbd></div>
+
+    <nav class="nav" aria-label="Main">
+      <a href="#" class="active"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</a>
+      <a href="#"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.5-3.5 3-5.5 6.5-5.5s6 2 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c2 .7 3.2 2.4 3.5 5.2"/></svg>Employee Directory</a>
+      <a href="#"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Attendance</a>
+      <a href="#"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Employee Performance</a>
+      <a href="#"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h5"/></svg>Leave Management</a>
+      <a href="#"><svg viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M2.5 10h19M6 15h4"/></svg>Payroll</a>
+      <a href="#"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V4h6v3M3 13h18"/></svg>Recruitment</a>
+      <a href="#"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12.5 3 3 5-6"/></svg>Onboarding</a>
+      <a href="#"><svg viewBox="0 0 24 24"><path d="m8 7-5 5 5 5M16 7l5 5-5 5M14 4l-4 16"/></svg>Development</a>
+    </nav>
+
+    <div class="bottom">
+      <a href="#"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01"/></svg>Help Center</a>
+      <a href="#"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg>Settings</a>
+      <a href="#" class="signout"><svg viewBox="0 0 24 24"><path d="M9 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4M16 8l4 4-4 4M20 12H9"/></svg>Sign Out</a>
+    </div>
+
+  </aside>
+
+  <!-- ===== PART 2: MAIN AREA ===== -->
+  <div class="main">
+
+    <header class="topbar">
+      <div class="crumb">Dashboard / <b>Overview</b></div>
+      <div class="actions">
+        <button class="btn"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Invite People</button>
+        <button class="btn primary">Generate Plan</button>
+      </div>
+    </header>
+
+    <section class="page">
+
+      <div class="head">
+        <div>
+          <h1>HR Insight Dashboard</h1>
+          <p>Smart HR insights that drive better decisions</p>
+        </div>
+        <div class="actions">
+          <button class="btn"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 20h16"/></svg>Export Data</button>
+          <button class="btn primary"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>New Entry</button>
+        </div>
+      </div>
+
+      <!-- ===== PART 3: STAT CARDS ===== -->
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-top">
+            <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.5-3.5 3-5.5 6.5-5.5s6 2 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c2 .7 3.2 2.4 3.5 5.2"/></svg>
+            <b>Total Employee</b><button class="dots" aria-label="More options">•••</button>
+          </div>
+          <div class="stat-body"><strong>272</strong><span class="change">+6%<em>last month</em></span></div>
+        </div>
+        <div class="stat">
+          <div class="stat-top">
+            <svg viewBox="0 0 24 24"><circle cx="10" cy="8" r="3.5"/><path d="M3 20c.5-3.5 3-5.5 7-5.5s6.5 2 7 5.5M19 8v6M16 11h6"/></svg>
+            <b>New Employee</b><button class="dots" aria-label="More options">•••</button>
+          </div>
+          <div class="stat-body"><strong>72</strong><span class="change">+4%<em>last month</em></span></div>
+        </div>
+        <div class="stat">
+          <div class="stat-top">
+            <svg viewBox="0 0 24 24"><circle cx="10" cy="8" r="3.5"/><path d="M3 20c.5-3.5 3-5.5 7-5.5s6.5 2 7 5.5M16 11h6"/></svg>
+            <b>Resign Employee</b><button class="dots" aria-label="More options">•••</button>
+          </div>
+          <div class="stat-body"><strong>16</strong><span class="change">+2%<em>last month</em></span></div>
+        </div>
+        <div class="stat">
+          <div class="stat-top">
+            <svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V4h6v3M3 13h18"/></svg>
+            <b>Job Applicants</b><button class="dots" aria-label="More options">•••</button>
+          </div>
+          <div class="stat-body"><strong>329</strong><span class="change">+8%<em>last month</em></span></div>
+        </div>
+      </div>
+
+      <!-- ===== PART 4 + 5: TEAM PERFORMANCE + ATTENDANCE ===== -->
+      <div class="row">
+
+        <div class="card">
+          <div class="card-head"><h2>Team Performance</h2><button class="dots" aria-label="More options">•••</button></div>
+          <div class="chart-meta">
+            <div class="legend">
+              <span style="--c:var(--brand)">Project Team</span>
+              <span style="--c:var(--orange)">Product Team</span>
+            </div>
+            <div class="seg"><button>Monthly</button><button class="on">Yearly</button></div>
+          </div>
+
+          <div class="chart">
+            <svg viewBox="0 0 620 230" role="img" aria-label="Team performance line chart for 2025">
+              <defs>
+                <linearGradient id="gp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7c5ce6" stop-opacity=".18"/><stop offset="1" stop-color="#7c5ce6" stop-opacity="0"/></linearGradient>
+                <linearGradient id="go" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f2994a" stop-opacity=".18"/><stop offset="1" stop-color="#f2994a" stop-opacity="0"/></linearGradient>
+              </defs>
+
+              <!-- y axis -->
+              <g font-size="9" fill="#9a9aab" text-anchor="end">
+                <text x="26" y="209">0</text><text x="26" y="169">10K</text><text x="26" y="130">20K</text>
+                <text x="26" y="90">30K</text><text x="26" y="51">40K</text><text x="26" y="11">50K</text>
+              </g>
+
+              <!-- x axis -->
+              <g font-size="9" fill="#9a9aab" text-anchor="middle">
+                <text x="34" y="224">Jan</text><text x="87" y="224">Feb</text><text x="139" y="224">Mar</text>
+                <text x="192" y="224">Apr</text><text x="245" y="224">May</text><text x="298" y="224">Jun</text>
+                <text x="350" y="224">Jul</text><text x="403" y="224">Aug</text>
+                <text x="456" y="224" fill="#16161d" font-weight="700">Sep</text>
+                <text x="508" y="224">Oct</text><text x="561" y="224">Nov</text><text x="614" y="224">Dec</text>
+              </g>
+
+              <!-- product team (orange) -->
+              <path fill="url(#go)" d="M34 150.6 C60.4 150.6 60.4 142.6 86.7 142.6 C113.1 142.6 113.1 158.5 139.5 158.5 C165.9 158.5 165.9 146.6 192.2 146.6 C218.6 146.6 218.6 122.8 244.9 122.8 C271.3 122.8 271.3 138.7 297.6 138.7 C324 138.7 324 158.5 350.4 158.5 C376.8 158.5 376.8 142.6 403.1 142.6 C429.5 142.6 429.5 111 455.8 111 C482.2 111 482.2 118.9 508.5 118.9 C534.9 118.9 534.9 130.8 561.3 130.8 C587.7 130.8 587.7 87.2 614 87.2 L614 206 L34 206 Z"/>
+              <path fill="none" stroke="#f2994a" stroke-width="1.6" d="M34 150.6 C60.4 150.6 60.4 142.6 86.7 142.6 C113.1 142.6 113.1 158.5 139.5 158.5 C165.9 158.5 165.9 146.6 192.2 146.6 C218.6 146.6 218.6 122.8 244.9 122.8 C271.3 122.8 271.3 138.7 297.6 138.7 C324 138.7 324 158.5 350.4 158.5 C376.8 158.5 376.8 142.6 403.1 142.6 C429.5 142.6 429.5 111 455.8 111 C482.2 111 482.2 118.9 508.5 118.9 C534.9 118.9 534.9 130.8 561.3 130.8 C587.7 130.8 587.7 87.2 614 87.2"/>
+
+              <!-- project team (purple) -->
+              <path fill="url(#gp)" d="M34 103 C60.4 103 60.4 111 86.7 111 C113.1 111 113.1 127 139.5 127 C165.9 127 165.9 107 192.2 107 C218.6 107 218.6 95 244.9 95 C271.3 95 271.3 119 297.6 119 C324 119 324 123 350.4 123 C376.8 123 376.8 95 403.1 95 C429.5 95 429.5 55.5 455.8 55.5 C482.2 55.5 482.2 67.4 508.5 67.4 C534.9 67.4 534.9 63.4 561.3 63.4 C587.7 63.4 587.7 39.7 614 39.7 L614 206 L34 206 Z"/>
+              <path fill="none" stroke="#7c5ce6" stroke-width="1.6" d="M34 103 C60.4 103 60.4 111 86.7 111 C113.1 111 113.1 127 139.5 127 C165.9 127 165.9 107 192.2 107 C218.6 107 218.6 95 244.9 95 C271.3 95 271.3 119 297.6 119 C324 119 324 123 350.4 123 C376.8 123 376.8 95 403.1 95 C429.5 95 429.5 55.5 455.8 55.5 C482.2 55.5 482.2 67.4 508.5 67.4 C534.9 67.4 534.9 63.4 561.3 63.4 C587.7 63.4 587.7 39.7 614 39.7"/>
+
+              <!-- September marker -->
+              <line x1="455.8" y1="8" x2="455.8" y2="206" stroke="#9a9aab" stroke-width="1" stroke-dasharray="3 3"/>
+              <circle cx="455.8" cy="55.5" r="3.5" fill="#7c5ce6"/>
+              <circle cx="455.8" cy="111" r="3.5" fill="#f2994a"/>
+            </svg>
+
+            <div class="tip">
+              <b>Sep, 2025</b>
+              <div style="--c:var(--brand)"><span>Project Team</span>38K</div>
+              <div style="--c:var(--orange)"><span>Product Team</span>24K</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h2>Attendance Report</h2><button class="dots" aria-label="More options">•••</button></div>
+          <div class="heat">
+            <span>11:00</span><i class="l1"></i><i class="l1"></i><i class="l1"></i><i class="l1"></i><i class="l1"></i>
+            <span>10:30</span><i class="l2"></i><i class="l2"></i><i class="l2"></i><i class="l2"></i><i class="l2"></i>
+            <span>10:00</span><i class="l3"></i><i class="l3"></i><i class="l2"></i><i class="l3"></i><i class="l3"></i>
+            <span>09:30</span><i class="l4"></i><i class="l4"></i><i class="l4"></i><i class="l4"></i><i class="l3"></i>
+            <span>09:00</span><i class="l5"></i><i class="l5"></i><i class="l6"></i><i class="l5"></i><i class="l5"></i>
+            <span>08:30</span><i class="l6"></i><i class="l6"></i><i class="l6"></i><i class="l6"></i><i class="l6"></i>
+            <span></span><span class="d">Mon</span><span class="d">Tue</span><span class="d">Wed</span><span class="d">Thu</span><span class="d">Fri</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ===== PART 6 + 7: EMPLOYEES TABLE + JOBS OVERVIEW ===== -->
+      <div class="row">
+
+        <div class="card">
+          <div class="card-head"><h2>Employees</h2><button class="dots" aria-label="More options">•••</button></div>
+          <div class="tbl">
+            <table>
+              <thead>
+                <tr><th><span class="cb"></span></th><th>Employee ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Department</th><th>Status</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><span class="cb"></span></td><td>#FR01890</td><td>Cooper Herwitz</td><td>cooper@mail.com</td><td>Jr. Developer</td><td>IT</td><td class="active-s">Active</td></tr>
+                <tr><td><span class="cb"></span></td><td>#FR01728</td><td>Kierra Geuse</td><td>kierra@mail.com</td><td>UI Designer</td><td>Creative</td><td class="active-s">Active</td></tr>
+                <tr><td><span class="cb"></span></td><td>#FR01653</td><td>Cheyenne Franci</td><td>cheyennefci@mail.com</td><td>Development</td><td>HR</td><td class="active-s">Active</td></tr>
+                <tr><td><span class="cb"></span></td><td>#FR01832</td><td>Charlie Saris</td><td>charliesar@mail.com</td><td>Media Social</td><td>Marketing</td><td class="active-s">Active</td></tr>
+                <tr><td><span class="cb"></span></td><td>#FR01728</td><td>Lindsey Mango</td><td>lindseymango@mail.com</td><td>Product Designer</td><td>Creative</td><td class="active-s">Active</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h2>Jobs Overview</h2><button class="dots" aria-label="More options">•••</button></div>
+          <div class="gauge">
+            <svg viewBox="0 0 200 112" aria-hidden="true">
+              <g fill="none" stroke-width="22" stroke-linecap="round">
+                <path d="M20 100A80 80 0 0 1 180 100" pathLength="100" stroke="#7c5ce6" stroke-dasharray="55 100"/>
+                <path d="M20 100A80 80 0 0 1 180 100" pathLength="100" stroke="#f2994a" stroke-dasharray="15 100" stroke-dashoffset="-65"/>
+                <path d="M20 100A80 80 0 0 1 180 100" pathLength="100" stroke="#4cc27a" stroke-dasharray="4 100" stroke-dashoffset="-90"/>
+              </g>
+            </svg>
+            <div class="gauge-n"><b>72</b><span>Total Jobs</span></div>
+          </div>
+          <div class="keys">
+            <div style="--c:var(--brand)"><b>46</b><span>Active Jobs</span></div>
+            <div style="--c:var(--orange)"><b>18</b><span>In Reviews Jobs</span></div>
+            <div style="--c:var(--mint)"><b>8</b><span>Finish Jobs</span></div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+  </div>
+
+</div>
+
+</body>
+</html>

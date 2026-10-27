@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+
+  <aside class="side">
+    <div class="brand">
+      <span class="logo"></span>
+      <div><b>Nosense Studio</b><small>hello@nonsense.studio</small></div>
+    </div>
+    <input class="search" type="search" placeholder="Search" aria-label="Search">
+    <nav class="menu" aria-label="Main">
+      <a class="active" href="#">Dashboard</a>
+      <a href="#">Employee Directory</a>
+      <a href="#">Attendance</a>
+      <a href="#">Employee Performance</a>
+      <a href="#">Leave Management</a>
+      <a href="#">Payroll</a>
+      <a href="#">Recruitment</a>
+      <a href="#">Onboarding</a>
+      <a href="#">Development</a>
+    </nav>
+    <nav class="menu bottom" aria-label="Account">
+      <a href="#">Help Center</a>
+      <a href="#">Settings</a>
+      <a class="signout" href="#">Sign Out</a>
+    </nav>
+  </aside>
+
+  <div class="main">
+
+    <header class="topbar">
+      <p>Dashboard / <b>Overview</b></p>
+      <div class="actions">
+        <button class="btn" type="button">+ Invite People</button>
+        <button class="btn primary" type="button">Generate Plan</button>
+      </div>
+    </header>
+
+    <section class="head">
+      <div>
+        <h1>HR Insight Dashboard</h1>
+        <p class="muted">Smart HR insights that drive better decisions</p>
+      </div>
+      <div class="actions">
+        <button class="btn" type="button">Export Data</button>
+        <button class="btn primary" type="button">+ New Entry</button>
+      </div>
+    </section>
+
+    <section class="stats">
+      <article class="card stat"><h2>Total Employee</h2><p class="num">272 <span class="up">+6% last month</span></p></article>
+      <article class="card stat"><h2>New Employee</h2><p class="num">72 <span class="up">+4% last month</span></p></article>
+      <article class="card stat"><h2>Resign Employee</h2><p class="num">16 <span class="up">+2% last month</span></p></article>
+      <article class="card stat"><h2>Job Applicants</h2><p class="num">329 <span class="up">+8% last month</span></p></article>
+    </section>
+
+    <section class="row two-one">
+      <article class="card">
+        <div class="card-head">
+          <h2>Team Performance</h2>
+          <div class="tabs"><span>Monthly</span><span class="on">Yearly</span></div>
+        </div>
+        <p class="legend"><i class="dot purple"></i>Project Team <i class="dot orange"></i>Product Team</p>
+        <div class="chart">
+          <ul class="ylabels"><li>50K</li><li>40K</li><li>30K</li><li>20K</li><li>10K</li></ul>
+          <svg viewBox="0 0 600 200" preserveAspectRatio="none" role="img"
+               aria-label="Line chart: Project Team grows from 30K to 45K over the year, Product Team from 15K to 32K.">
+            <polygon fill="#7c5cf0" fill-opacity="0.08" points="0,80 54,88 109,92 164,84 218,104 273,92 327,96 382,80 436,48 491,68 545,52 600,20 600,200 0,200"/>
+            <polyline fill="none" stroke="#6d4ae0" stroke-width="2.5" stroke-linejoin="round" points="0,80 54,88 109,92 164,84 218,104 273,92 327,96 382,80 436,48 491,68 545,52 600,20"/>
+            <polyline fill="none" stroke="#f59a4a" stroke-width="2.5" stroke-linejoin="round" points="0,140 54,144 109,152 164,140 218,160 273,128 327,120 382,140 436,104 491,112 545,96 600,72"/>
+          </svg>
+        </div>
+        <ul class="months"><li>Jan</li><li>Mar</li><li>May</li><li>Jul</li><li>Sep</li><li>Nov</li><li>Dec</li></ul>
+      </article>
+
+      <article class="card">
+        <div class="card-head"><h2>Attendance Report</h2></div>
+        <div class="heat" role="img" aria-label="Heatmap of attendance by time and weekday; mornings are busiest.">
+          <i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i>
+          <i class="c1"></i><i class="c1"></i><i class="c2"></i><i class="c1"></i><i class="c1"></i>
+          <i class="c1"></i><i class="c2"></i><i class="c2"></i><i class="c2"></i><i class="c1"></i>
+          <i class="c2"></i><i class="c2"></i><i class="c3"></i><i class="c2"></i><i class="c2"></i>
+          <i class="c3"></i><i class="c4"></i><i class="c3"></i><i class="c4"></i><i class="c3"></i>
+          <i class="c4"></i><i class="c5"></i><i class="c4"></i><i class="c5"></i><i class="c4"></i>
+        </div>
+        <ul class="days"><li>Mon</li><li>Tue</li><li>Wed</li><li>Thu</li><li>Fri</li></ul>
+      </article>
+    </section>
+
+    <section class="row two-one">
+      <article class="card">
+        <div class="card-head"><h2>Employees</h2></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Employee ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Department</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>#FR01890</td><td>Cooper Herwitz</td><td>cooper@mail.com</td><td>Jr. Developer</td><td>IT</td><td class="ok">Active</td></tr>
+              <tr><td>#FR01728</td><td>Kierra Geuse</td><td>kierra@mail.com</td><td>UI Designer</td><td>Creative</td><td class="ok">Active</td></tr>
+              <tr><td>#FR01653</td><td>Cheyenne Franci</td><td>cheyennefci@mail.com</td><td>Development</td><td>HR</td><td class="ok">Active</td></tr>
+              <tr><td>#FR01832</td><td>Charlie Saris</td><td>charliesar@mail.com</td><td>Media Social</td><td>Marketing</td><td class="ok">Active</td></tr>
+              <tr><td>#FR01728</td><td>Lindsey Mango</td><td>lindseymango@mail.com</td><td>Product Designer</td><td>Creative</td><td class="ok">Active</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-head"><h2>Jobs Overview</h2></div>
+        <div class="gauge" role="img" aria-label="Half donut: 46 active, 18 in review, 8 finished out of 72 jobs.">
+          <div class="gauge-text"><b>72</b><small>Total Jobs</small></div>
+        </div>
+        <ul class="jobs">
+          <li><i class="dot purple"></i><b>46</b> Active Jobs</li>
+          <li><i class="dot orange"></i><b>18</b> In Reviews Jobs</li>
+          <li><i class="dot green"></i><b>8</b> Finish Jobs</li>
+        </ul>
+      </article>
+    </section>
+
+  </div>
+</div>
+</body>
+</html>
